@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "rn-master-langApp",
+    "slug": "rn-master-langApp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "rn-master-langApp"
+}
