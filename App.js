@@ -55,6 +55,17 @@ const App = () => {
           y: dy,
         });
       },
+      onPanResponderRelease: () => {
+        console.log("touch finishing");
+        Animated.spring(POSITION, {
+          toValue: {
+            x: 0,
+            y: 0,
+          },
+          bounciness: 10,
+          useNativeDriver: true,
+        }).start();
+      },
     })
   ).current;
   console.log(panResponder);
@@ -65,7 +76,7 @@ const App = () => {
         style={{
           borderRadius: borderRadius,
           backgroundColor: bgColor,
-          transform: [...POSITION.getTranslateTransform()],
+          transform: POSITION.getTranslateTransform(),
         }}
       />
     </Container>
