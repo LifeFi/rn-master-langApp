@@ -8,7 +8,7 @@ const Container = styled.View`
   justify-content: center;
   align-items: center;
 `;
-const Box = styled.TouchableOpacity`
+const Box = styled.View`
   background-color: tomato;
   width: 200px;
   height: 200px;
@@ -18,16 +18,25 @@ const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 const App = () => {
   const Y = new Animated.Value(0);
-  const moveUp = () => {};
+  const moveUp = () => {
+    Animated.spring(Y, {
+      toValue: 200,
+      bounciness: 15,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  Y.addListener(() => console.log(Y));
 
   return (
     <Container>
-      <AnimatedBox
-        onPress={moveUp}
-        style={{
-          transform: [{ translateY: Y }],
-        }}
-      />
+      <TouchableOpacity onPress={moveUp}>
+        <AnimatedBox
+          style={{
+            transform: [{ translateY: Y }],
+          }}
+        />
+      </TouchableOpacity>
     </Container>
   );
 };
