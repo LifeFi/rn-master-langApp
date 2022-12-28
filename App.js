@@ -49,22 +49,23 @@ const App = () => {
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        console.log("Touch Started");
+        POSITION.setOffset({
+          x: POSITION.x._value,
+          y: POSITION.y._value,
+        });
+      },
       onPanResponderMove: (_, { dx, dy }) => {
+        console.log("Finger Moving");
         POSITION.setValue({
           x: dx,
           y: dy,
         });
       },
       onPanResponderRelease: () => {
-        console.log("touch finishing");
-        Animated.spring(POSITION, {
-          toValue: {
-            x: 0,
-            y: 0,
-          },
-          bounciness: 10,
-          useNativeDriver: true,
-        }).start();
+        console.log("Touch Finished");
+        POSITION.flattenOffset();
       },
     })
   ).current;
