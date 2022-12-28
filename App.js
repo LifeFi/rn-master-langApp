@@ -1,87 +1,65 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  PanResponder,
-  Text,
-  View,
-  TouchableOpacity,
-  Easing,
-  Pressable,
-  Dimensions,
-} from "react-native";
+import React, { useRef } from "react";
+import { Animated, PanResponder, View } from "react-native";
 import styled from "styled-components/native";
-import "react-native-console-time-polyfill";
+import { Ionicons } from "@expo/vector-icons";
 
 const Container = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-`;
-const Box = styled.View`
-  background-color: tomato;
-  width: 200px;
-  height: 200px;
+  background-color: #00a8ff;
 `;
 
-const AnimatedBox = Animated.createAnimatedComponent(Box);
+const Card = styled(Animated.createAnimatedComponent(View))`
+  background-color: white;
+  width: 300px;
+  height: 300px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+`;
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-const App = () => {
-  const POSITION = useRef(
-    new Animated.ValueXY({
-      x: 0,
-      y: 0,
-    })
-  ).current;
-
-  // Y_POSITION.addListener(() => console.log(opacityValue));
-
-  const borderRadius = POSITION.y.interpolate({
-    inputRange: [-300, 300],
-    outputRange: [100, 0],
-  });
-
-  const bgColor = POSITION.y.interpolate({
-    inputRange: [-300, 300],
-    outputRange: ["rgb(255, 99, 71)", "rgb(71, 166, 255)"],
-  });
+export default function App() {
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        console.log("Touch Started");
-        POSITION.setOffset({
-          x: POSITION.x._value,
-          y: POSITION.y._value,
-        });
+      onPanResponderMove: (_, { dx }) => {
+        position.setValue(dx);
       },
-      onPanResponderMove: (_, { dx, dy }) => {
-        console.log("Finger Moving");
-        POSITION.setValue({
-          x: dx,
-          y: dy,
-        });
-      },
+      onPanResponderGrant: () => onPressIn(),
       onPanResponderRelease: () => {
-        console.log("Touch Finished");
-        POSITION.flattenOffset();
+        Animated.parallel([
+          onPressOut,
+          Animated.spring(position, {
+            toValue: 0,
+            useNativeDriver: true,
+          }),
+        ]).start();
       },
     })
   ).current;
-  console.log(panResponder);
+  const scale = useRef(new Animated.Value(1)).current;
+  const position = useRef(new Animated.Value(0)).current;
+
+  const onPressIn = () =>
+    Animated.spring(scale, { toValue: 0.95, useNativeDriver: true }).start();
+
+  const onPressOut = Animated.spring(scale, {
+    toValue: 1,
+    useNativeDriver: true,
+  });
+
   return (
     <Container>
-      <AnimatedBox
+      <Card
         {...panResponder.panHandlers}
         style={{
-          borderRadius: borderRadius,
-          backgroundColor: bgColor,
-          transform: POSITION.getTranslateTransform(),
+          transform: [{ scale }, { translateX: position }],
         }}
-      />
+      >
+        <Ionicons name="pizza" color="#192a56" size={98} />
+      </Card>
     </Container>
   );
-};
-
-export default App;
+}
